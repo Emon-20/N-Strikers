@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sholo Guti — 16 Soldiers | Traditional Strategy Board Game</title>
+    <meta name="description" content="Play the classic South Asian strategy board game Sholo Guti (16 Guti / Sixteen Soldiers) online. Challenge a friend locally or test your wits against an intelligent AI opponent.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ═══════════════════ AMBIENT PARTICLES ═══════════════════ -->
+    <div id="particles-bg" class="particles-bg" aria-hidden="true"></div>
+
+    <!-- ═══════════════════ MAIN MENU SCREEN ═══════════════════ -->
+    <div id="menu-screen" class="screen active">
+        <div class="menu-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 80 80" width="80" height="80">
+                        <circle cx="40" cy="40" r="36" fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
+                        <circle cx="40" cy="26" r="6" fill="#e8c170"/>
+                        <circle cx="28" cy="40" r="6" fill="#e8c170"/>
+                        <circle cx="52" cy="40" r="6" fill="#e8c170"/>
+                        <circle cx="40" cy="54" r="6" fill="#3a6b4e"/>
+                        <line x1="40" y1="26" x2="28" y2="40" stroke="#9a8866" stroke-width="1.5"/>
+                        <line x1="40" y1="26" x2="52" y2="40" stroke="#9a8866" stroke-width="1.5"/>
+                        <line x1="28" y1="40" x2="40" y2="54" stroke="#9a8866" stroke-width="1.5"/>
+                        <line x1="52" y1="40" x2="40" y2="54" stroke="#9a8866" stroke-width="1.5"/>
+                        <line x1="28" y1="40" x2="52" y2="40" stroke="#9a8866" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#e8c170"/>
+                                <stop offset="100%" stop-color="#3a6b4e"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="game-title">শোল গুটি</h1>
+                <p class="game-subtitle">SHOLO GUTI · 16 SOLDIERS</p>
+                <p class="game-tagline">An Ancient Game of Strategy & Tactics</p>
+            </div>
+
+            <div class="menu-buttons">
+                <button id="btn-pvp" class="menu-btn primary" aria-label="Play with a friend locally">
+                    <span class="btn-icon">👥</span>
+                    <span class="btn-text">
+                        <span class="btn-label">Play with Friend</span>
+                        <span class="btn-desc">Local 2-Player Mode</span>
+                    </span>
+                </button>
+                <button id="btn-ai" class="menu-btn secondary" aria-label="Play against the computer AI">
+                    <span class="btn-icon">🤖</span>
+                    <span class="btn-text">
+                        <span class="btn-label">Play vs Computer</span>
+                        <span class="btn-desc">Challenge the AI</span>
+                    </span>
+                </button>
+                <button id="btn-rules" class="menu-btn tertiary" aria-label="Learn the game rules">
+                    <span class="btn-icon">📜</span>
+                    <span class="btn-text">
+                        <span class="btn-label">How to Play</span>
+                        <span class="btn-desc">Rules & Strategy</span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="menu-footer">
+                <p>A traditional South Asian board game</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ RULES MODAL ═══════════════════ -->
+    <div id="rules-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+        <div class="modal-content rules-modal-content">
+            <button id="rules-close" class="modal-close" aria-label="Close rules">&times;</button>
+            <h2 id="rules-title" class="modal-title">How to Play Sholo Guti</h2>
+
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-number">1</div>
+                    <h3>Setup</h3>
+                    <p>Each player starts with <strong>16 pieces</strong> placed on the intersections of their half of the board. The board has a central grid with triangular extensions on two opposite sides.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-number">2</div>
+                    <h3>Movement</h3>
+                    <p>Players take turns moving one piece along a <strong>drawn line</strong> to an adjacent empty intersection. Movement can be forward, backward, sideways, or diagonal — as long as there's a connecting line.</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-number">3</div>
+                    <h3>Capturing</h3>
+                    <p>Capture an opponent's piece by <strong>jumping over it</strong> along a line to an empty space beyond. Multiple captures (chain jumps) in a single turn are allowed!</p>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-number">4</div>
+                    <h3>Winning</h3>
+                    <p>Win by capturing <strong>all 16</strong> of your opponent's pieces, or by blocking them so they have <strong>no legal moves</strong> left.</p>
+                </div>
+            </div>
+
+            <div class="rules-tips">
+                <h3>💡 Strategy Tips</h3>
+                <ul>
+                    <li>Control the center of the board for more movement options.</li>
+                    <li>Look for chain jump opportunities — they can turn the tide!</li>
+                    <li>Don't leave your pieces isolated; keep them supported.</li>
+                    <li>Force your opponent into positions where their pieces block each other.</li>
+                </ul>
+            </div>
+
+            <button id="rules-got-it" class="menu-btn primary" style="margin-top:1.5rem;width:100%;">
+                <span class="btn-icon">✨</span>
+                <span class="btn-text"><span class="btn-label">Got it!</span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ GAME SCREEN ═══════════════════ -->
+    <div id="game-screen" class="screen">
+        <!-- Top HUD -->
+        <header id="game-hud" class="game-hud">
+            <div class="hud-player hud-player-1" id="hud-p1">
+                <div class="hud-avatar p1-avatar">
+                    <span class="piece-icon gold-piece"></span>
+                </div>
+                <div class="hud-info">
+                    <span class="hud-name" id="p1-name">Player 1</span>
+                    <span class="hud-captures" id="p1-captures">Captured: <strong>0</strong></span>
+                </div>
+                <div class="hud-turn-indicator" id="p1-indicator"></div>
+            </div>
+
+            <div class="hud-center">
+                <div class="turn-display" id="turn-display">
+                    <span class="turn-label">Turn</span>
+                    <span class="turn-number" id="turn-number">1</span>
+                </div>
+                <div class="hud-actions">
+                    <button id="btn-undo" class="hud-btn" title="Undo last move" aria-label="Undo">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btn-restart" class="hud-btn" title="Restart game" aria-label="Restart">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btn-menu" class="hud-btn" title="Back to menu" aria-label="Menu">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hud-player hud-player-2" id="hud-p2">
+                <div class="hud-turn-indicator" id="p2-indicator"></div>
+                <div class="hud-info right">
+                    <span class="hud-name" id="p2-name">Player 2</span>
+                    <span class="hud-captures" id="p2-captures">Captured: <strong>0</strong></span>
+                </div>
+                <div class="hud-avatar p2-avatar">
+                    <span class="piece-icon emerald-piece"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Board Container -->
+        <main class="board-area">
+            <div class="board-frame" id="board-frame">
+                <canvas id="board-canvas" aria-label="Sholo Guti game board"></canvas>
+                <div id="pieces-layer" class="pieces-layer"></div>
+                <div id="highlights-layer" class="highlights-layer"></div>
+            </div>
+            <!-- Chain jump continue / end turn -->
+            <div id="chain-actions" class="chain-actions hidden">
+                <button id="btn-end-turn" class="chain-btn">End Turn</button>
+            </div>
+            <!-- Status message area -->
+            <div id="game-status" class="game-status"></div>
+        </main>
+    </div>
+
+    <!-- ═══════════════════ VICTORY MODAL ═══════════════════ -->
+    <div id="victory-modal" class="modal-overlay victory-overlay" role="dialog" aria-modal="true" aria-labelledby="victory-title">
+        <div class="modal-content victory-modal-content">
+            <div class="victory-confetti" id="victory-confetti" aria-hidden="true"></div>
+            <div class="victory-trophy">🏆</div>
+            <h2 id="victory-title" class="victory-title">Victory!</h2>
+            <p id="victory-message" class="victory-message">Player 1 wins the game!</p>
+            <div class="victory-stats" id="victory-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-turns">0</span>
+                    <span class="stat-label">Turns</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-captures-w">0</span>
+                    <span class="stat-label">Captures (Gold)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-captures-b">0</span>
+                    <span class="stat-label">Captures (Emerald)</span>
+                </div>
+            </div>
+            <div class="victory-actions">
+                <button id="btn-play-again" class="menu-btn primary">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text"><span class="btn-label">Play Again</span></span>
+                </button>
+                <button id="btn-victory-menu" class="menu-btn secondary">
+                    <span class="btn-icon">🏠</span>
+                    <span class="btn-text"><span class="btn-label">Main Menu</span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ CONFIRM DIALOG ═══════════════════ -->
+    <div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true">
+        <div class="modal-content confirm-modal-content">
+            <h2 class="modal-title" id="confirm-title">Confirm</h2>
+            <p id="confirm-message">Are you sure?</p>
+            <div class="confirm-actions">
+                <button id="confirm-yes" class="menu-btn primary small-btn">Yes</button>
+                <button id="confirm-no" class="menu-btn secondary small-btn">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/constants.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
