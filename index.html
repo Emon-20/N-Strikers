@@ -3,205 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sholo Guti — 16 Soldiers | Traditional Strategy Board Game</title>
-    <meta name="description" content="Play the classic South Asian strategy board game Sholo Guti (16 Guti / Sixteen Soldiers) online. Challenge a friend locally or test your wits against an intelligent AI opponent.">
+    <title>Guti Strategy Games — 12 Guti & 16 Guti | Traditional Board Games</title>
+    <meta name="description" content="Experience the ultimate South Asian strategy board games: Level 1 (12 Guti / Baro Guti) and Level 2 (16 Guti / Sholo Guti). Challenge a friend locally or outsmart our tactical AI opponent.">
+    <meta name="theme-color" content="#121820">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <!-- ═══════════════════ AMBIENT PARTICLES ═══════════════════ -->
     <div id="particles-bg" class="particles-bg" aria-hidden="true"></div>
 
-    <!-- ═══════════════════ MAIN MENU SCREEN ═══════════════════ -->
+    <!-- ═══════════════════ MAIN MENU & LEVEL SELECTION ═══════════════════ -->
     <div id="menu-screen" class="screen active">
         <div class="menu-container">
-            <div class="logo-section">
+            <!-- Game Title & Emblem -->
+            <header class="logo-section">
                 <div class="logo-icon">
-                    <svg viewBox="0 0 80 80" width="80" height="80">
-                        <circle cx="40" cy="40" r="36" fill="none" stroke="url(#logoGrad)" stroke-width="3"/>
-                        <circle cx="40" cy="26" r="6" fill="#e8c170"/>
-                        <circle cx="28" cy="40" r="6" fill="#e8c170"/>
-                        <circle cx="52" cy="40" r="6" fill="#e8c170"/>
-                        <circle cx="40" cy="54" r="6" fill="#3a6b4e"/>
-                        <line x1="40" y1="26" x2="28" y2="40" stroke="#9a8866" stroke-width="1.5"/>
-                        <line x1="40" y1="26" x2="52" y2="40" stroke="#9a8866" stroke-width="1.5"/>
-                        <line x1="28" y1="40" x2="40" y2="54" stroke="#9a8866" stroke-width="1.5"/>
-                        <line x1="52" y1="40" x2="40" y2="54" stroke="#9a8866" stroke-width="1.5"/>
-                        <line x1="28" y1="40" x2="52" y2="40" stroke="#9a8866" stroke-width="1.5"/>
+                    <svg viewBox="0 0 84 84" width="84" height="84" aria-hidden="true">
+                        <circle cx="42" cy="42" r="38" fill="none" stroke="url(#logoGrad)" stroke-width="3.5"/>
+                        <circle cx="42" cy="24" r="6" fill="#84cc16"/>
+                        <circle cx="26" cy="42" r="6" fill="#84cc16"/>
+                        <circle cx="58" cy="42" r="6" fill="#f97316"/>
+                        <circle cx="42" cy="60" r="6" fill="#f97316"/>
+                        <circle cx="42" cy="42" r="7.5" fill="#e8c170"/>
+                        <line x1="42" y1="24" x2="26" y2="42" stroke="#9e845c" stroke-width="1.8"/>
+                        <line x1="42" y1="24" x2="58" y2="42" stroke="#9e845c" stroke-width="1.8"/>
+                        <line x1="26" y1="42" x2="42" y2="60" stroke="#9e845c" stroke-width="1.8"/>
+                        <line x1="58" y1="42" x2="42" y2="60" stroke="#9e845c" stroke-width="1.8"/>
+                        <line x1="26" y1="42" x2="58" y2="42" stroke="#9e845c" stroke-width="1.8"/>
+                        <line x1="42" y1="24" x2="42" y2="60" stroke="#9e845c" stroke-width="1.8"/>
                         <defs>
                             <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#e8c170"/>
-                                <stop offset="100%" stop-color="#3a6b4e"/>
+                                <stop offset="0%" stop-color="#84cc16"/>
+                                <stop offset="50%" stop-color="#e8c170"/>
+                                <stop offset="100%" stop-color="#f97316"/>
                             </linearGradient>
                         </defs>
                     </svg>
                 </div>
-                <h1 class="game-title">শোল গুটি</h1>
-                <p class="game-subtitle">SHOLO GUTI · 16 SOLDIERS</p>
-                <p class="game-tagline">An Ancient Game of Strategy & Tactics</p>
+                <h1 class="game-title">গুটি যুদ্ধ</h1>
+                <p class="game-subtitle">GUTI STRATEGY · 12 & 16 SOLDIERS</p>
+                <p class="game-tagline">Traditional South Asian Strategy & Tactical Warfare</p>
+            </header>
+
+            <!-- Selection Panels -->
+            <div class="selection-grid">
+                <!-- Level Selector Section -->
+                <div class="selection-section">
+                    <h2 class="section-heading"><span>1</span> Select Level & Board</h2>
+                    <div class="level-cards-container">
+                        <!-- Level 1: 12 Guti Card -->
+                        <div class="level-select-card selected" data-level="12_guti" id="card-level-12">
+                            <div class="card-badge">Level 1</div>
+                            <div class="card-preview square-preview">
+                                <svg viewBox="0 0 60 60" width="54" height="54">
+                                    <rect x="6" y="6" width="48" height="48" fill="rgba(232, 193, 112, 0.08)" stroke="#9e845c" stroke-width="1.5"/>
+                                    <line x1="6" y1="18" x2="54" y2="18" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="6" y1="30" x2="54" y2="30" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="6" y1="42" x2="54" y2="42" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="18" y1="6" x2="18" y2="54" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="30" y1="6" x2="30" y2="54" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="42" y1="6" x2="42" y2="54" stroke="#7c6544" stroke-width="1"/>
+                                    <line x1="6" y1="6" x2="54" y2="54" stroke="#9e845c" stroke-width="1"/>
+                                    <line x1="54" y1="6" x2="6" y2="54" stroke="#9e845c" stroke-width="1"/>
+                                    <polygon points="30,6 54,30 30,54 6,30" fill="none" stroke="#9e845c" stroke-width="1"/>
+                                </svg>
+                            </div>
+                            <div class="card-details">
+                                <h3 class="card-title">12 Guti (Baro Guti)</h3>
+                                <p class="card-subtitle">5×5 Grid · 24 Soldiers</p>
+                                <p class="card-desc">Square matrix with full cross-diagonals. Fast-paced, high tactical density.</p>
+                                <div class="card-colors">
+                                    <span class="color-dot lime"></span> Lime Green
+                                    <span class="vs-text">vs</span>
+                                    <span class="color-dot orange"></span> Sunset Orange
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Level 2: 16 Guti Card -->
+                        <div class="level-select-card" data-level="16_guti" id="card-level-16">
+                            <div class="card-badge">Level 2</div>
+                            <div class="card-preview expanded-preview">
+                                <svg viewBox="0 0 60 70" width="54" height="63">
+                                    <!-- Top triangle -->
+                                    <polygon points="30,4 12,20 48,20" fill="rgba(232, 193, 112, 0.12)" stroke="#9e845c" stroke-width="1"/>
+                                    <line x1="30" y1="4" x2="30" y2="20" stroke="#7c6544" stroke-width="1"/>
+                                    <!-- Central grid -->
+                                    <rect x="6" y="20" width="48" height="30" fill="rgba(255, 255, 255, 0.04)" stroke="#9e845c" stroke-width="1.2"/>
+                                    <line x1="6" y1="27.5" x2="54" y2="27.5" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="6" y1="35" x2="54" y2="35" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="6" y1="42.5" x2="54" y2="42.5" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="18" y1="20" x2="18" y2="50" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="30" y1="20" x2="30" y2="50" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="42" y1="20" x2="42" y2="50" stroke="#7c6544" stroke-width="0.8"/>
+                                    <line x1="6" y1="20" x2="54" y2="50" stroke="#9e845c" stroke-width="0.8"/>
+                                    <line x1="54" y1="20" x2="6" y2="50" stroke="#9e845c" stroke-width="0.8"/>
+                                    <!-- Bottom triangle -->
+                                    <polygon points="30,66 12,50 48,50" fill="rgba(16, 185, 129, 0.12)" stroke="#9e845c" stroke-width="1"/>
+                                    <line x1="30" y1="66" x2="30" y2="50" stroke="#7c6544" stroke-width="1"/>
+                                </svg>
+                            </div>
+                            <div class="card-details">
+                                <h3 class="card-title">16 Guti (Sholo Guti)</h3>
+                                <p class="card-subtitle">37 Nodes · 32 Soldiers</p>
+                                <p class="card-desc">Grand expanded board with triangular bases. Deep multi-tier strategic warfare.</p>
+                                <div class="card-colors">
+                                    <span class="color-dot gold"></span> Radiant Gold
+                                    <span class="vs-text">vs</span>
+                                    <span class="color-dot emerald"></span> Emerald Green
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mode Selector Section -->
+                <div class="selection-section">
+                    <h2 class="section-heading"><span>2</span> Select Opponent Mode</h2>
+                    <div class="mode-cards-container">
+                        <div class="mode-select-card selected" data-mode="pvp" id="card-mode-pvp">
+                            <div class="mode-icon">👥</div>
+                            <div class="mode-info">
+                                <h3 class="mode-title">Play with Friend</h3>
+                                <p class="mode-desc">Local 2-Player Pass & Play on the same screen</p>
+                            </div>
+                            <div class="mode-check">✓</div>
+                        </div>
+
+                        <div class="mode-select-card" data-mode="ai" id="card-mode-ai">
+                            <div class="mode-icon">🤖</div>
+                            <div class="mode-info">
+                                <h3 class="mode-title">Play vs Computer</h3>
+                                <p class="mode-desc">Challenge the Tactical Minimax AI Opponent</p>
+                            </div>
+                            <div class="mode-check">✓</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="menu-buttons">
-                <button id="btn-pvp" class="menu-btn primary" aria-label="Play with a friend locally">
-                    <span class="btn-icon">👥</span>
+            <!-- Start Button & Quick Actions -->
+            <div class="menu-action-section">
+                <button id="btn-start-game" class="menu-btn primary big-start-btn" aria-label="Start Game with selected level and mode">
+                    <span class="btn-icon">⚔️</span>
                     <span class="btn-text">
-                        <span class="btn-label">Play with Friend</span>
-                        <span class="btn-desc">Local 2-Player Mode</span>
+                        <span class="btn-label">Start Match</span>
+                        <span class="btn-desc">Enter the Battlefield</span>
                     </span>
                 </button>
-                <button id="btn-ai" class="menu-btn secondary" aria-label="Play against the computer AI">
-                    <span class="btn-icon">🤖</span>
-                    <span class="btn-text">
-                        <span class="btn-label">Play vs Computer</span>
-                        <span class="btn-desc">Challenge the AI</span>
-                    </span>
-                </button>
-                <button id="btn-rules" class="menu-btn tertiary" aria-label="Learn the game rules">
-                    <span class="btn-icon">📜</span>
-                    <span class="btn-text">
-                        <span class="btn-label">How to Play</span>
-                        <span class="btn-desc">Rules & Strategy</span>
-                    </span>
-                </button>
+
+                <!-- Quick Match Shortcuts -->
+                <div class="quick-match-row">
+                    <span class="quick-match-label">Quick Launch:</span>
+                    <button id="btn-quick-12-pvp" class="quick-btn" title="Level 1: 12 Guti Local 2-Player">12 Guti 👥</button>
+                    <button id="btn-quick-12-ai" class="quick-btn" title="Level 1: 12 Guti vs Computer">12 Guti 🤖</button>
+                    <button id="btn-quick-16-pvp" class="quick-btn" title="Level 2: 16 Guti Local 2-Player">16 Guti 👥</button>
+                    <button id="btn-quick-16-ai" class="quick-btn" title="Level 2: 16 Guti vs Computer">16 Guti 🤖</button>
+                </div>
+
+                <div class="menu-secondary-row">
+                    <button id="btn-rules" class="menu-btn secondary rules-trigger-btn" aria-label="Open Game Rules">
+                        <span class="btn-icon">📜</span>
+                        <span class="btn-text"><span class="btn-label">How to Play & Strategy Rules</span></span>
+                    </button>
+                </div>
             </div>
 
-            <div class="menu-footer">
-                <p>A traditional South Asian board game</p>
-            </div>
+            <footer class="menu-footer">
+                <p>Authentic Traditional South Asian Board Game Collection · Bangladesh & India</p>
+            </footer>
         </div>
     </div>
 
-    <!-- ═══════════════════ RULES MODAL ═══════════════════ -->
+    <!-- ═══════════════════ RULES & STRATEGY MODAL ═══════════════════ -->
     <div id="rules-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rules-title">
         <div class="modal-content rules-modal-content">
             <button id="rules-close" class="modal-close" aria-label="Close rules">&times;</button>
-            <h2 id="rules-title" class="modal-title">How to Play Sholo Guti</h2>
-
-            <div class="rules-grid">
-                <div class="rule-card">
-                    <div class="rule-number">1</div>
-                    <h3>Setup</h3>
-                    <p>Each player starts with <strong>16 pieces</strong> placed on the intersections of their half of the board. The board has a central grid with triangular extensions on two opposite sides.</p>
-                </div>
-                <div class="rule-card">
-                    <div class="rule-number">2</div>
-                    <h3>Movement</h3>
-                    <p>Players take turns moving one piece along a <strong>drawn line</strong> to an adjacent empty intersection. Movement can be forward, backward, sideways, or diagonal — as long as there's a connecting line.</p>
-                </div>
-                <div class="rule-card">
-                    <div class="rule-number">3</div>
-                    <h3>Capturing</h3>
-                    <p>Capture an opponent's piece by <strong>jumping over it</strong> along a line to an empty space beyond. Multiple captures (chain jumps) in a single turn are allowed!</p>
-                </div>
-                <div class="rule-card">
-                    <div class="rule-number">4</div>
-                    <h3>Winning</h3>
-                    <p>Win by capturing <strong>all 16</strong> of your opponent's pieces, or by blocking them so they have <strong>no legal moves</strong> left.</p>
+            
+            <div class="rules-header">
+                <h2 id="rules-title" class="modal-title">Guti Strategy Rulebook</h2>
+                <div class="rules-tab-bar" role="tablist">
+                    <button class="rules-tab-btn active" data-tab="tab-12-guti" role="tab">Level 1: 12 Guti</button>
+                    <button class="rules-tab-btn" data-tab="tab-16-guti" role="tab">Level 2: 16 Guti</button>
+                    <button class="rules-tab-btn" data-tab="tab-strategy" role="tab">Tactics & Jumps</button>
                 </div>
             </div>
 
-            <div class="rules-tips">
-                <h3>💡 Strategy Tips</h3>
-                <ul>
-                    <li>Control the center of the board for more movement options.</li>
-                    <li>Look for chain jump opportunities — they can turn the tide!</li>
-                    <li>Don't leave your pieces isolated; keep them supported.</li>
-                    <li>Force your opponent into positions where their pieces block each other.</li>
-                </ul>
+            <!-- Tab 1: 12 Guti Rules -->
+            <div id="tab-12-guti" class="rules-tab-pane active" role="tabpanel">
+                <div class="rules-grid">
+                    <div class="rule-card">
+                        <div class="rule-number">1</div>
+                        <h3>The 12 Guti Board</h3>
+                        <p>Played on a <strong>5×5 intersection matrix</strong> (forming 4×4 internal squares) with horizontal, vertical, and cross-diagonal lines (Alquerque pattern). 25 total intersecting nodes.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">2</div>
+                        <h3>Initial Setup</h3>
+                        <p>Each player starts with <strong>12 pieces</strong>: Player 1 occupies rows 1 & 2 plus left 2 points of row 3. Player 2 occupies bottom rows and right 2 points of row 3. The <strong>dead center node is empty</strong>.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">3</div>
+                        <h3>Moving & Jumping</h3>
+                        <p>Slide 1 step along any drawn line to an empty adjacent node. To capture, <strong>jump straight over an opponent piece</strong> onto an empty node immediately beyond.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">4</div>
+                        <h3>Victory Conditions</h3>
+                        <p>Win by capturing <strong>all 12 enemy pieces</strong>, or by completely <strong>trapping / blocking</strong> the opponent so they have no legal moves left!</p>
+                    </div>
+                </div>
             </div>
 
-            <button id="rules-got-it" class="menu-btn primary" style="margin-top:1.5rem;width:100%;">
+            <!-- Tab 2: 16 Guti Rules -->
+            <div id="tab-16-guti" class="rules-tab-pane" role="tabpanel">
+                <div class="rules-grid">
+                    <div class="rule-card">
+                        <div class="rule-number">1</div>
+                        <h3>The Expanded Board</h3>
+                        <p>Features a central <strong>5×5 main grid</strong> connected to <strong>triangular extensions</strong> on the top and bottom sides. Total of <strong>37 intersection points</strong>.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">2</div>
+                        <h3>16 Pieces Each</h3>
+                        <p>Player 1 starts on top triangle + top 2 grid rows (16 pieces). Player 2 starts on bottom triangle + bottom 2 grid rows (16 pieces). The <strong>entire middle row (5 nodes) starts empty</strong>.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">3</div>
+                        <h3>Capturing Battles</h3>
+                        <p>Orthogonal and diagonal jump captures are permitted wherever straight drawn lines connect. Captured pieces are removed from the board immediately.</p>
+                    </div>
+                    <div class="rule-card">
+                        <div class="rule-number">4</div>
+                        <h3>Win Condition</h3>
+                        <p>Capture all <strong>16 enemy soldiers</strong>, or trap their remaining forces so no legal move is possible.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Strategy & Jumps -->
+            <div id="tab-strategy" class="rules-tab-pane" role="tabpanel">
+                <div class="rules-tips">
+                    <h3>⚡ Pro Tactics & Mechanics</h3>
+                    <ul>
+                        <li><strong>Multi-Capture Chain Jumps:</strong> If your piece executes a capture jump and lands in a position where another capture is available, you may continue jumping in the same turn!</li>
+                        <li><strong>Voluntary End Turn:</strong> During a chain jump, you can press <em>End Turn</em> if you prefer not to make further risky jumps.</li>
+                        <li><strong>Center Grid Supremacy:</strong> Central nodes have 8 connecting lines, granting maximum mobility and attack angles.</li>
+                        <li><strong>Flanking & Fortresses:</strong> Guard your back lines; keeping pieces clustered in pairs prevents opposing jump landing spots.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button id="rules-got-it" class="menu-btn primary modal-confirm-btn">
                 <span class="btn-icon">✨</span>
-                <span class="btn-text"><span class="btn-label">Got it!</span></span>
+                <span class="btn-text"><span class="btn-label">I'm Ready to Play!</span></span>
             </button>
         </div>
     </div>
 
-    <!-- ═══════════════════ GAME SCREEN ═══════════════════ -->
+    <!-- ═══════════════════ MAIN GAME SCREEN ═══════════════════ -->
     <div id="game-screen" class="screen">
-        <!-- Top HUD -->
+        <!-- Top Game HUD -->
         <header id="game-hud" class="game-hud">
+            <!-- Player 1 Profile Card -->
             <div class="hud-player hud-player-1" id="hud-p1">
                 <div class="hud-avatar p1-avatar">
-                    <span class="piece-icon gold-piece"></span>
+                    <span id="p1-avatar-icon" class="piece-icon lime-piece"></span>
                 </div>
                 <div class="hud-info">
                     <span class="hud-name" id="p1-name">Player 1</span>
-                    <span class="hud-captures" id="p1-captures">Captured: <strong>0</strong></span>
+                    <div class="hud-badges">
+                        <span class="hud-badge pieces-badge" title="Pieces on board">🛡️ <strong id="p1-pieces-left">12 / 12</strong></span>
+                        <span class="hud-badge captures-badge" title="Captures made">⚔️ <strong id="p1-captures">0</strong></span>
+                    </div>
                 </div>
                 <div class="hud-turn-indicator" id="p1-indicator"></div>
             </div>
 
+            <!-- Central HUD Controls -->
             <div class="hud-center">
+                <div class="level-badge" id="hud-level-badge" data-level="12_guti">12 Guti · 2-Player</div>
                 <div class="turn-display" id="turn-display">
                     <span class="turn-label">Turn</span>
                     <span class="turn-number" id="turn-number">1</span>
                 </div>
                 <div class="hud-actions">
+                    <button id="btn-sound-toggle" class="hud-btn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+                    <button id="btn-level-switch" class="hud-btn" title="Switch Level" aria-label="Switch Level">⚡</button>
                     <button id="btn-undo" class="hud-btn" title="Undo last move" aria-label="Undo">
-                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" fill="currentColor"/></svg>
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" fill="currentColor"/></svg>
                     </button>
                     <button id="btn-restart" class="hud-btn" title="Restart game" aria-label="Restart">
-                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/></svg>
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="currentColor"/></svg>
                     </button>
                     <button id="btn-menu" class="hud-btn" title="Back to menu" aria-label="Menu">
-                        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
                     </button>
                 </div>
             </div>
 
+            <!-- Player 2 Profile Card -->
             <div class="hud-player hud-player-2" id="hud-p2">
                 <div class="hud-turn-indicator" id="p2-indicator"></div>
                 <div class="hud-info right">
                     <span class="hud-name" id="p2-name">Player 2</span>
-                    <span class="hud-captures" id="p2-captures">Captured: <strong>0</strong></span>
+                    <div class="hud-badges">
+                        <span class="hud-badge pieces-badge" title="Pieces on board">🛡️ <strong id="p2-pieces-left">12 / 12</strong></span>
+                        <span class="hud-badge captures-badge" title="Captures made">⚔️ <strong id="p2-captures">0</strong></span>
+                    </div>
                 </div>
                 <div class="hud-avatar p2-avatar">
-                    <span class="piece-icon emerald-piece"></span>
+                    <span id="p2-avatar-icon" class="piece-icon orange-piece"></span>
                 </div>
             </div>
         </header>
 
-        <!-- Game Board Container -->
+        <!-- Interactive Board Arena -->
         <main class="board-area">
             <div class="board-frame" id="board-frame">
-                <canvas id="board-canvas" aria-label="Sholo Guti game board"></canvas>
+                <canvas id="board-canvas" aria-label="Strategy board canvas"></canvas>
                 <div id="pieces-layer" class="pieces-layer"></div>
                 <div id="highlights-layer" class="highlights-layer"></div>
             </div>
-            <!-- Chain jump continue / end turn -->
+
+            <!-- Chain Jump Multi-Capture Banner -->
             <div id="chain-actions" class="chain-actions hidden">
-                <button id="btn-end-turn" class="chain-btn">End Turn</button>
+                <div class="chain-message">
+                    <span class="chain-sparkle">✨</span>
+                    <span>Chain Jump Active! Keep jumping or end turn</span>
+                </div>
+                <button id="btn-end-turn" class="chain-btn">End Turn 🛑</button>
             </div>
-            <!-- Status message area -->
-            <div id="game-status" class="game-status"></div>
+
+            <!-- Status Guidance Bar -->
+            <div id="game-status" class="game-status status-info">Select a piece to begin</div>
         </main>
     </div>
 
     <!-- ═══════════════════ VICTORY MODAL ═══════════════════ -->
     <div id="victory-modal" class="modal-overlay victory-overlay" role="dialog" aria-modal="true" aria-labelledby="victory-title">
         <div class="modal-content victory-modal-content">
-            <div class="victory-confetti" id="victory-confetti" aria-hidden="true"></div>
+            <canvas id="confetti-canvas" class="confetti-canvas" aria-hidden="true"></canvas>
             <div class="victory-trophy">🏆</div>
             <h2 id="victory-title" class="victory-title">Victory!</h2>
-            <p id="victory-message" class="victory-message">Player 1 wins the game!</p>
+            <p id="victory-message" class="victory-message">Player 1 wins the battle!</p>
+            <p id="victory-subtitle" class="victory-subtitle">Complete elimination of all opposing pieces.</p>
+
+            <!-- Match Statistics Grid -->
             <div class="victory-stats" id="victory-stats">
                 <div class="stat-item">
+                    <span class="stat-value" id="stat-level">12 Guti</span>
+                    <span class="stat-label">Level</span>
+                </div>
+                <div class="stat-item">
                     <span class="stat-value" id="stat-turns">0</span>
-                    <span class="stat-label">Turns</span>
+                    <span class="stat-label">Total Turns</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value" id="stat-captures-w">0</span>
-                    <span class="stat-label">Captures (Gold)</span>
+                    <span class="stat-value" id="stat-captures-p1">0</span>
+                    <span class="stat-label" id="stat-captures-p1-label">P1 Captures</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value" id="stat-captures-b">0</span>
-                    <span class="stat-label">Captures (Emerald)</span>
+                    <span class="stat-value" id="stat-captures-p2">0</span>
+                    <span class="stat-label" id="stat-captures-p2-label">P2 Captures</span>
                 </div>
             </div>
+
             <div class="victory-actions">
+                <button id="btn-next-level" class="menu-btn primary highlight-next-btn hidden">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text"><span class="btn-label">Advance to Level 2 (16 Guti)</span></span>
+                </button>
                 <button id="btn-play-again" class="menu-btn primary">
                     <span class="btn-icon">🔄</span>
                     <span class="btn-text"><span class="btn-label">Play Again</span></span>
@@ -215,19 +393,20 @@
     </div>
 
     <!-- ═══════════════════ CONFIRM DIALOG ═══════════════════ -->
-    <div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div id="confirm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
         <div class="modal-content confirm-modal-content">
             <h2 class="modal-title" id="confirm-title">Confirm</h2>
             <p id="confirm-message">Are you sure?</p>
             <div class="confirm-actions">
                 <button id="confirm-yes" class="menu-btn primary small-btn">Yes</button>
-                <button id="confirm-no" class="menu-btn secondary small-btn">No</button>
+                <button id="confirm-no" class="menu-btn secondary small-btn">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Modular Game Scripts -->
     <script src="js/constants.js"></script>
+    <script src="js/audio.js"></script>
     <script src="js/board.js"></script>
     <script src="js/game.js"></script>
     <script src="js/ai.js"></script>
