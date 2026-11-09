@@ -1,22 +1,24 @@
-/* ═══════════════════════════════════════════════════════
-   SHOLO GUTI — GAME LOGIC ENGINE
-   Core game state, move validation, capture logic
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GUTI STRATEGY BOARD GAMES — CORE GAME ENGINE
+   Universal game rules engine for Level 1 (12 Guti) and Level 2 (16 Guti)
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 const GameEngine = (() => {
+    let currentLevel = GutiGames.LEVEL_12;
     let boardState = [];
-    let currentPlayer = SholoGuti.PLAYER_1;
+    let currentPlayer = GutiGames.PLAYER_1;
     let turnCount = 1;
-    let capturedBy = { 1: 0, 2: 0 }; // captures made BY each player
+    let capturedBy = { 1: 0, 2: 0 };
     let moveHistory = [];
-    let chainJumpPiece = null; // node index of piece doing chain jump
+    let chainJumpPiece = null;
     let gameOver = false;
     let winner = null;
     let gameMode = 'pvp'; // 'pvp' or 'ai'
 
-    function init(mode) {
-        boardState = [...SholoGuti.INITIAL_STATE];
-        currentPlayer = SholoGuti.PLAYER_1;
+    function init(levelId = '12_guti', mode = 'pvp') {
+        currentLevel = GutiGames.getLevel(levelId);
+        boardState = [...currentLevel.initialState];
+        currentPlayer = GutiGames.PLAYER_1;
         turnCount = 1;
         capturedBy = { 1: 0, 2: 0 };
         moveHistory = [];
@@ -24,6 +26,10 @@ const GameEngine = (() => {
         gameOver = false;
         winner = null;
         gameMode = mode || 'pvp';
+    }
+
+    function getLevel() {
+        return currentLevel;
     }
 
     function getState() {
@@ -39,7 +45,7 @@ const GameEngine = (() => {
     }
 
     function getCapturedBy(player) {
-        return capturedBy[player];
+        return capturedBy[player] || 0;
     }
 
     function isGameOver() {
@@ -58,17 +64,25 @@ const GameEngine = (() => {
         return chainJumpPiece;
     }
 
+    function countPieces(player) {
+        let count = 0;
+        for (let i = 0; i < currentLevel.totalNodes; i++) {
+            if (boardState[i] === player) count++;
+        }
+        return count;
+    }
+
     /**
-     * Get all simple (non-capture) moves for a piece at nodeIdx.
-     * Returns array of destination node indices.
+     * Get all simple (non-capture) adjacent moves for a piece at nodeIdx.
      */
     function getSimpleMoves(nodeIdx) {
-        if (boardState[nodeIdx] === SholoGuti.EMPTY) return [];
-        if (chainJumpPiece !== null) return []; // During chain jump, no simple moves
+        if (boardState[nodeIdx] === GutiGames.EMPTY) return [];
+        if (chainJumpPiece !== null) return []; // In chain jump, only further captures are valid
 
         const moves = [];
-        for (const neighbor of SholoGuti.ADJACENCY[nodeIdx]) {
-            if (boardState[neighbor] === SholoGuti.EMPTY) {
+        const neighbors = currentLevel.adjacency[nodeIdx] || [];
+        for (const neighbor of neighbors) {
+            if (boardState[neighbor] === GutiGames.EMPTY) {
                 moves.push(neighbor);
             }
         }
@@ -76,21 +90,20 @@ const GameEngine = (() => {
     }
 
     /**
-     * Get all capture (jump) moves for a piece at nodeIdx.
-     * Returns array of { over: nodeIdx, to: nodeIdx }.
+     * Get all capture jump moves for a piece at nodeIdx.
      */
     function getCaptureMoves(nodeIdx) {
-        if (boardState[nodeIdx] === SholoGuti.EMPTY) return [];
+        if (boardState[nodeIdx] === GutiGames.EMPTY) return [];
 
         const player = boardState[nodeIdx];
-        const opponent = player === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
+        const opponent = player === GutiGames.PLAYER_1 ? GutiGames.PLAYER_2 : GutiGames.PLAYER_1;
         const captures = [];
 
-        for (const neighbor of SholoGuti.ADJACENCY[nodeIdx]) {
+        const neighbors = currentLevel.adjacency[nodeIdx] || [];
+        for (const neighbor of neighbors) {
             if (boardState[neighbor] === opponent) {
-                // Check if there's a landing spot beyond
-                const landing = SholoGuti.JUMP_MAP[nodeIdx]?.[neighbor];
-                if (landing !== undefined && boardState[landing] === SholoGuti.EMPTY) {
+                const landing = currentLevel.jumpMap[nodeIdx]?.[neighbor];
+                if (landing !== undefined && boardState[landing] === GutiGames.EMPTY) {
                     captures.push({ over: neighbor, to: landing });
                 }
             }
@@ -99,21 +112,18 @@ const GameEngine = (() => {
     }
 
     /**
-     * Get all valid moves for a piece at nodeIdx.
-     * If in chain jump mode, only capture moves for the chain piece.
+     * Get all legal moves for a piece at nodeIdx for the current player.
      */
     function getValidMoves(nodeIdx) {
         if (gameOver) return { simple: [], captures: [] };
         if (boardState[nodeIdx] !== currentPlayer) return { simple: [], captures: [] };
 
-        // During chain jump, only the chain piece can move, and only captures
+        // If in chain jump mode, only the active jumping piece can move and only captures
         if (chainJumpPiece !== null) {
             if (nodeIdx !== chainJumpPiece) return { simple: [], captures: [] };
             return { simple: [], captures: getCaptureMoves(nodeIdx) };
         }
 
-        // Check if any piece of current player has a capture available
-        // (Forced capture rule is optional — we'll make captures preferred but not forced)
         const simple = getSimpleMoves(nodeIdx);
         const captures = getCaptureMoves(nodeIdx);
 
@@ -121,23 +131,23 @@ const GameEngine = (() => {
     }
 
     /**
-     * Check if a player has any legal moves.
+     * Check if a player has any legal moves anywhere on the board.
      */
     function hasLegalMoves(player) {
-        for (let i = 0; i < SholoGuti.TOTAL_NODES; i++) {
+        const opponent = player === GutiGames.PLAYER_1 ? GutiGames.PLAYER_2 : GutiGames.PLAYER_1;
+
+        for (let i = 0; i < currentLevel.totalNodes; i++) {
             if (boardState[i] !== player) continue;
 
-            // Check simple moves
-            for (const neighbor of SholoGuti.ADJACENCY[i]) {
-                if (boardState[neighbor] === SholoGuti.EMPTY) return true;
-            }
+            const neighbors = currentLevel.adjacency[i] || [];
+            for (const neighbor of neighbors) {
+                // Check simple step
+                if (boardState[neighbor] === GutiGames.EMPTY) return true;
 
-            // Check captures
-            const opponent = player === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
-            for (const neighbor of SholoGuti.ADJACENCY[i]) {
+                // Check jump capture
                 if (boardState[neighbor] === opponent) {
-                    const landing = SholoGuti.JUMP_MAP[i]?.[neighbor];
-                    if (landing !== undefined && boardState[landing] === SholoGuti.EMPTY) {
+                    const landing = currentLevel.jumpMap[i]?.[neighbor];
+                    if (landing !== undefined && boardState[landing] === GutiGames.EMPTY) {
                         return true;
                     }
                 }
@@ -147,14 +157,7 @@ const GameEngine = (() => {
     }
 
     /**
-     * Count pieces for a player.
-     */
-    function countPieces(player) {
-        return boardState.filter(n => n === player).length;
-    }
-
-    /**
-     * Execute a move. Returns a move result object.
+     * Execute a move from node to node.
      */
     function executeMove(fromNode, toNode) {
         if (gameOver) return null;
@@ -162,13 +165,13 @@ const GameEngine = (() => {
 
         const moves = getValidMoves(fromNode);
 
-        // Check capture moves
+        // Check capture jump
         const captureMove = moves.captures.find(c => c.to === toNode);
         if (captureMove) {
             return executeCaptureMove(fromNode, captureMove);
         }
 
-        // Check simple moves
+        // Check standard simple move
         if (moves.simple.includes(toNode)) {
             return executeSimpleMove(fromNode, toNode);
         }
@@ -186,7 +189,7 @@ const GameEngine = (() => {
         };
 
         boardState[to] = boardState[from];
-        boardState[from] = SholoGuti.EMPTY;
+        boardState[from] = GutiGames.EMPTY;
 
         moveHistory.push(historyEntry);
         endTurn();
@@ -197,8 +200,8 @@ const GameEngine = (() => {
             to,
             captured: null,
             chainContinues: false,
-            gameOver: gameOver,
-            winner: winner
+            gameOver,
+            winner
         };
     }
 
@@ -216,13 +219,13 @@ const GameEngine = (() => {
         };
 
         boardState[to] = boardState[from];
-        boardState[from] = SholoGuti.EMPTY;
-        boardState[over] = SholoGuti.EMPTY;
-        capturedBy[currentPlayer]++;
+        boardState[from] = GutiGames.EMPTY;
+        boardState[over] = GutiGames.EMPTY;
+        capturedBy[currentPlayer] = (capturedBy[currentPlayer] || 0) + 1;
 
         moveHistory.push(historyEntry);
 
-        // Check for chain jumps
+        // Check if the same piece can continue jumping
         const furtherCaptures = getCaptureMoves(to);
         if (furtherCaptures.length > 0) {
             chainJumpPiece = to;
@@ -233,8 +236,8 @@ const GameEngine = (() => {
                 to,
                 captured: over,
                 chainContinues: true,
-                gameOver: gameOver,
-                winner: winner
+                gameOver,
+                winner
             };
         }
 
@@ -247,14 +250,11 @@ const GameEngine = (() => {
             to,
             captured: over,
             chainContinues: false,
-            gameOver: gameOver,
-            winner: winner
+            gameOver,
+            winner
         };
     }
 
-    /**
-     * End chain jump early (player chooses to stop).
-     */
     function endChainJump() {
         if (chainJumpPiece === null) return;
         chainJumpPiece = null;
@@ -263,38 +263,36 @@ const GameEngine = (() => {
 
     function endTurn() {
         chainJumpPiece = null;
-        currentPlayer = currentPlayer === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
+        currentPlayer = currentPlayer === GutiGames.PLAYER_1 ? GutiGames.PLAYER_2 : GutiGames.PLAYER_1;
         turnCount++;
         checkWinCondition();
     }
 
     function checkWinCondition() {
-        // Check if opponent has no pieces
-        const opponent = currentPlayer === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
+        const p1Pieces = countPieces(GutiGames.PLAYER_1);
+        const p2Pieces = countPieces(GutiGames.PLAYER_2);
 
-        if (countPieces(SholoGuti.PLAYER_1) === 0) {
+        // 1. All opponent pieces captured
+        if (p1Pieces === 0) {
             gameOver = true;
-            winner = SholoGuti.PLAYER_2;
+            winner = GutiGames.PLAYER_2;
             return;
         }
 
-        if (countPieces(SholoGuti.PLAYER_2) === 0) {
+        if (p2Pieces === 0) {
             gameOver = true;
-            winner = SholoGuti.PLAYER_1;
+            winner = GutiGames.PLAYER_1;
             return;
         }
 
-        // Check if current player (after turn switch) has no legal moves
+        // 2. Trapped / completely blocked (no legal moves remaining)
         if (!hasLegalMoves(currentPlayer)) {
             gameOver = true;
-            // The player who CAN'T move loses
-            winner = currentPlayer === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
+            // The trapped player with no moves loses
+            winner = currentPlayer === GutiGames.PLAYER_1 ? GutiGames.PLAYER_2 : GutiGames.PLAYER_1;
         }
     }
 
-    /**
-     * Undo the last move (or chain of captures in the same turn).
-     */
     function undo() {
         if (moveHistory.length === 0) return false;
         if (gameOver) {
@@ -302,27 +300,24 @@ const GameEngine = (() => {
             winner = null;
         }
 
-        // Undo all moves in the current chain
         const lastTurn = moveHistory[moveHistory.length - 1].turnCount;
         const lastPlayer = moveHistory[moveHistory.length - 1].player;
 
         while (moveHistory.length > 0) {
             const last = moveHistory[moveHistory.length - 1];
-
-            // Only undo moves from the same turn
             if (last.turnCount !== lastTurn || last.player !== lastPlayer) break;
 
             moveHistory.pop();
 
             if (last.type === 'simple') {
                 boardState[last.from] = last.player;
-                boardState[last.to] = SholoGuti.EMPTY;
+                boardState[last.to] = GutiGames.EMPTY;
             } else if (last.type === 'capture') {
-                const opponent = last.player === SholoGuti.PLAYER_1 ? SholoGuti.PLAYER_2 : SholoGuti.PLAYER_1;
+                const opponent = last.player === GutiGames.PLAYER_1 ? GutiGames.PLAYER_2 : GutiGames.PLAYER_1;
                 boardState[last.from] = last.player;
-                boardState[last.to] = SholoGuti.EMPTY;
+                boardState[last.to] = GutiGames.EMPTY;
                 boardState[last.over] = opponent;
-                capturedBy[last.player]--;
+                capturedBy[last.player] = Math.max(0, (capturedBy[last.player] || 1) - 1);
             }
         }
 
@@ -333,13 +328,12 @@ const GameEngine = (() => {
         return true;
     }
 
-    /**
-     * Create a snapshot of the game state for AI evaluation.
-     */
     function snapshot() {
         return {
+            levelId: currentLevel.id,
             boardState: [...boardState],
             currentPlayer,
+            turnCount,
             capturedBy: { ...capturedBy },
             chainJumpPiece,
             gameOver,
@@ -347,12 +341,11 @@ const GameEngine = (() => {
         };
     }
 
-    /**
-     * Restore from a snapshot.
-     */
     function restore(snap) {
+        currentLevel = GutiGames.getLevel(snap.levelId);
         boardState = [...snap.boardState];
         currentPlayer = snap.currentPlayer;
+        turnCount = snap.turnCount;
         capturedBy = { ...snap.capturedBy };
         chainJumpPiece = snap.chainJumpPiece;
         gameOver = snap.gameOver;
@@ -361,6 +354,7 @@ const GameEngine = (() => {
 
     return {
         init,
+        getLevel,
         getState,
         getCurrentPlayer,
         getTurnCount,
