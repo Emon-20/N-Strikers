@@ -1,7 +1,7 @@
-/* ═══════════════════════════════════════════════════════
-   SHOLO GUTI — PIECE & HIGHLIGHT RENDERER
-   Manages DOM elements for pieces and move highlights
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GUTI STRATEGY BOARD GAMES — PIECE & HIGHLIGHT RENDERER
+   Manages interactive piece tokens, fluid CSS transitions, and node highlights
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
 const PieceRenderer = (() => {
     let piecesLayer, highlightsLayer;
@@ -9,7 +9,7 @@ const PieceRenderer = (() => {
     let pieceSize = 0;
     let highlightSize = 0;
     let pieceElements = {}; // nodeIdx -> DOM element
-    let highlightElements = []; // array of DOM elements
+    let highlightElements = []; // array of highlight DOM elements
 
     function init(pLayer, hLayer) {
         piecesLayer = pLayer;
@@ -18,37 +18,59 @@ const PieceRenderer = (() => {
 
     function resize(size) {
         boardSize = size;
-        pieceSize = Math.max(16, size * 0.058);
-        highlightSize = Math.max(14, size * 0.042);
+        const level = GameEngine.getLevel();
+
+        // 12 Guti has 5x5 grid so pieces can be slightly larger
+        if (level && level.id === '12_guti') {
+            pieceSize = Math.max(22, size * 0.072);
+            highlightSize = Math.max(18, size * 0.054);
+        } else {
+            pieceSize = Math.max(18, size * 0.058);
+            highlightSize = Math.max(15, size * 0.044);
+        }
+
         updateAllPositions();
     }
 
-    /**
-     * Render all pieces based on game state.
-     */
+    function clearAll() {
+        if (piecesLayer) piecesLayer.innerHTML = '';
+        if (highlightsLayer) highlightsLayer.innerHTML = '';
+        pieceElements = {};
+        highlightElements = [];
+    }
+
     function renderPieces(state, animated = false) {
+        const level = GameEngine.getLevel();
+        const theme = level.theme;
+
         // Remove pieces that are no longer present
         for (const [nodeStr, el] of Object.entries(pieceElements)) {
             const node = parseInt(nodeStr);
-            if (state[node] === SholoGuti.EMPTY) {
+            if (state[node] === GutiGames.EMPTY) {
                 el.classList.add('captured');
                 const elRef = el;
                 setTimeout(() => {
                     elRef.remove();
-                }, 400);
+                }, 380);
                 delete pieceElements[node];
             }
         }
 
-        // Add/update pieces
-        for (let i = 0; i < SholoGuti.TOTAL_NODES; i++) {
-            if (state[i] === SholoGuti.EMPTY) continue;
+        // Add or update pieces
+        for (let i = 0; i < level.totalNodes; i++) {
+            if (state[i] === GutiGames.EMPTY) continue;
 
             if (!pieceElements[i]) {
-                // Create new piece element
                 const el = document.createElement('div');
-                el.className = `game-piece ${state[i] === SholoGuti.PLAYER_1 ? 'p1-piece' : 'p2-piece'}`;
+                const isP1 = state[i] === GutiGames.PLAYER_1;
+                const pieceClass = isP1 ? theme.p1Class : theme.p2Class;
+
+                el.className = `game-piece ${pieceClass} ${isP1 ? 'p1-piece' : 'p2-piece'}`;
                 el.dataset.node = i;
+                el.dataset.player = state[i];
+                el.setAttribute('role', 'button');
+                el.setAttribute('aria-label', `${isP1 ? theme.p1Name : theme.p2Name} piece at intersection ${i + 1}`);
+
                 el.style.width = pieceSize + 'px';
                 el.style.height = pieceSize + 'px';
 
@@ -62,10 +84,32 @@ const PieceRenderer = (() => {
         }
     }
 
-    /**
-     * Move a piece element from one node to another with animation.
-     */
-    function animateMove(fromNode, toNode, callback) {
+    function updateAllPositions() {
+        const level = GameEngine.getLevel();
+        if (!level) return;
+
+        for (const [nodeStr, el] of Object.entries(pieceElements)) {
+            const node = parseInt(nodeStr);
+            el.style.width = pieceSize + 'px';
+            el.style.height = pieceSize + 'px';
+
+            const [px, py] = BoardRenderer.getNodePixel(node);
+            el.style.left = (px - pieceSize / 2) + 'px';
+            el.style.top = (py - pieceSize / 2) + 'px';
+        }
+
+        for (const el of highlightElements) {
+            const node = parseInt(el.dataset.target);
+            el.style.width = highlightSize + 'px';
+            el.style.height = highlightSize + 'px';
+
+            const [px, py] = BoardRenderer.getNodePixel(node);
+            el.style.left = (px - highlightSize / 2) + 'px';
+            el.style.top = (py - highlightSize / 2) + 'px';
+        }
+    }
+
+    function animateMove(fromNode, toNode, isJump = false, callback) {
         const el = pieceElements[fromNode];
         if (!el) {
             if (callback) callback();
@@ -73,26 +117,24 @@ const PieceRenderer = (() => {
         }
 
         el.classList.add('animating');
+        if (isJump) el.classList.add('jumping');
         el.classList.remove('selected');
 
         const [px, py] = BoardRenderer.getNodePixel(toNode);
         el.style.left = (px - pieceSize / 2) + 'px';
         el.style.top = (py - pieceSize / 2) + 'px';
 
-        // Update tracking
         delete pieceElements[fromNode];
         pieceElements[toNode] = el;
         el.dataset.node = toNode;
 
         setTimeout(() => {
             el.classList.remove('animating');
+            el.classList.remove('jumping');
             if (callback) callback();
-        }, 320);
+        }, 310);
     }
 
-    /**
-     * Animate capturing (removing) a piece.
-     */
     function animateCapture(nodeIdx, callback) {
         const el = pieceElements[nodeIdx];
         if (!el) {
@@ -101,19 +143,27 @@ const PieceRenderer = (() => {
         }
 
         el.classList.add('captured');
-        delete pieceElements[nodeIdx];
+
+        // Shockwave burst element at captured node
+        const [px, py] = BoardRenderer.getNodePixel(nodeIdx);
+        const burst = document.createElement('div');
+        burst.className = 'capture-shockwave';
+        burst.style.left = px + 'px';
+        burst.style.top = py + 'px';
+        piecesLayer.appendChild(burst);
+
+        setTimeout(() => {
+            burst.remove();
+        }, 450);
 
         setTimeout(() => {
             el.remove();
+            delete pieceElements[nodeIdx];
             if (callback) callback();
-        }, 400);
+        }, 360);
     }
 
-    /**
-     * Select a piece (visual highlight).
-     */
     function selectPiece(nodeIdx) {
-        // Deselect all first
         deselectAll();
         const el = pieceElements[nodeIdx];
         if (el) {
@@ -127,101 +177,80 @@ const PieceRenderer = (() => {
         }
     }
 
-    /**
-     * Show move highlights for valid moves.
-     */
-    function showHighlights(simpleMoves, captureMoves) {
+    function showHighlights(simpleMoves = [], captureMoves = []) {
         clearHighlights();
 
-        for (const node of simpleMoves) {
-            createHighlight(node, 'simple-move');
+        // 1. Simple move highlights (glowing ring)
+        for (const toNode of simpleMoves) {
+            const el = document.createElement('div');
+            el.className = 'move-highlight move-simple';
+            el.dataset.target = toNode;
+            el.style.width = highlightSize + 'px';
+            el.style.height = highlightSize + 'px';
+
+            const [px, py] = BoardRenderer.getNodePixel(toNode);
+            el.style.left = (px - highlightSize / 2) + 'px';
+            el.style.top = (py - highlightSize / 2) + 'px';
+
+            highlightsLayer.appendChild(el);
+            highlightElements.push(el);
         }
 
+        // 2. Capture move highlights (vibrant combat target)
         for (const cap of captureMoves) {
-            createHighlight(cap.to, 'capture-move');
+            const el = document.createElement('div');
+            el.className = 'move-highlight move-capture';
+            el.dataset.target = cap.to;
+            el.dataset.over = cap.over;
+            el.style.width = (highlightSize * 1.15) + 'px';
+            el.style.height = (highlightSize * 1.15) + 'px';
+
+            const [px, py] = BoardRenderer.getNodePixel(cap.to);
+            el.style.left = (px - (highlightSize * 1.15) / 2) + 'px';
+            el.style.top = (py - (highlightSize * 1.15) / 2) + 'px';
+
+            // Inner crosshair icon
+            const inner = document.createElement('span');
+            inner.className = 'capture-target-icon';
+            el.appendChild(inner);
+
+            highlightsLayer.appendChild(el);
+            highlightElements.push(el);
         }
-    }
-
-    function createHighlight(nodeIdx, className) {
-        const el = document.createElement('div');
-        el.className = `move-highlight ${className}`;
-        el.dataset.target = nodeIdx;
-        el.style.width = highlightSize + 'px';
-        el.style.height = highlightSize + 'px';
-
-        const [px, py] = BoardRenderer.getNodePixel(nodeIdx);
-        el.style.left = (px - highlightSize / 2) + 'px';
-        el.style.top = (py - highlightSize / 2) + 'px';
-
-        highlightsLayer.appendChild(el);
-        highlightElements.push(el);
     }
 
     function clearHighlights() {
-        for (const el of highlightElements) {
-            el.remove();
-        }
+        if (highlightsLayer) highlightsLayer.innerHTML = '';
         highlightElements = [];
     }
 
     /**
-     * Update all piece positions (after resize).
+     * Hit-test nearest node to pixel coordinate (x, y) with generous tolerance.
      */
-    function updateAllPositions() {
-        for (const [nodeStr, el] of Object.entries(pieceElements)) {
-            const node = parseInt(nodeStr);
-            el.style.width = pieceSize + 'px';
-            el.style.height = pieceSize + 'px';
-            const [px, py] = BoardRenderer.getNodePixel(node);
-            el.style.left = (px - pieceSize / 2) + 'px';
-            el.style.top = (py - pieceSize / 2) + 'px';
-        }
+    function getNodeAtPosition(x, y) {
+        const level = GameEngine.getLevel();
+        if (!level) return -1;
 
-        // Update highlight positions too
-        for (const el of highlightElements) {
-            const node = parseInt(el.dataset.target);
-            el.style.width = highlightSize + 'px';
-            el.style.height = highlightSize + 'px';
-            const [px, py] = BoardRenderer.getNodePixel(node);
-            el.style.left = (px - highlightSize / 2) + 'px';
-            el.style.top = (py - highlightSize / 2) + 'px';
-        }
-    }
+        let closestNode = -1;
+        let minDist = Infinity;
+        const maxClickDist = Math.max(26, pieceSize * 0.72);
 
-    /**
-     * Clear all pieces from the DOM.
-     */
-    function clearAll() {
-        for (const el of Object.values(pieceElements)) {
-            el.remove();
-        }
-        pieceElements = {};
-        clearHighlights();
-    }
-
-    /**
-     * Get node index from a click/touch position relative to the board.
-     */
-    function getNodeAtPosition(x, y, threshold) {
-        threshold = threshold || pieceSize * 0.8;
-        let closest = -1;
-        let closestDist = Infinity;
-
-        for (let i = 0; i < SholoGuti.TOTAL_NODES; i++) {
-            const [px, py] = BoardRenderer.getNodePixel(i);
-            const dist = Math.sqrt((x - px) ** 2 + (y - py) ** 2);
-            if (dist < threshold && dist < closestDist) {
-                closest = i;
-                closestDist = dist;
+        for (let i = 0; i < level.totalNodes; i++) {
+            const [nx, ny] = BoardRenderer.getNodePixel(i);
+            const dist = Math.hypot(x - nx, y - ny);
+            if (dist < minDist) {
+                minDist = dist;
+                closestNode = i;
             }
         }
 
-        return closest;
+        return minDist <= maxClickDist ? closestNode : -1;
     }
 
     return {
         init,
         resize,
+        clearAll,
         renderPieces,
         animateMove,
         animateCapture,
@@ -229,8 +258,6 @@ const PieceRenderer = (() => {
         deselectAll,
         showHighlights,
         clearHighlights,
-        clearAll,
-        getNodeAtPosition,
-        get pieceSize() { return pieceSize; }
+        getNodeAtPosition
     };
 })();
